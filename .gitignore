@@ -1,0 +1,10 @@
+.idea/*
+.ipynb_checkpoints/*
+__pycache__/
+
+
+other_scripts/*
+
+*.png
+*.mp4
+*.ipynb
