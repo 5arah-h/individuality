@@ -2,7 +2,7 @@
 .ipynb_checkpoints/*
 __pycache__/
 
-
+BROJA_2PID/*
 other_scripts/*
 
 *.png
