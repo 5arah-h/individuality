@@ -10,7 +10,7 @@ from explauto_master.explauto.utils.config import make_configuration
 from explauto_master.explauto.exceptions import ExplautoBootstrapError
 from explauto_master.explauto.sensorimotor_model.non_parametric import NonParametric
 
-from interest_model import MiscRandomInterest, competence_dist
+from exploration_algorithms.interest_model import MiscRandomInterest, competence_dist
 
 
 class LearningModule(Agent):
