@@ -146,22 +146,19 @@ class Stick(Environment):
                 if (hand_pos[0] - self.handle_pos[0]) ** 2. + (hand_pos[1] - self.handle_pos[1]) ** 2. < self.handle_tol_sq:
                     self.handle_pos = hand_pos
                     self.angle = hand_angle
-                    #self.angle = np.mod(hand_angle + self.handle_noise * np.random.randn() + 1, 2) - 1
                     self.compute_end_pos()
                     self.held = True
         else:
-            assert(arm_holding == self.id) #TODO drum kümmern
+            assert(arm_holding == self.id)
 
             self.handle_pos = hand_pos
             self.angle = hand_angle
-            # self.angle = np.mod(hand_angle + self.handle_noise * np.random.randn() + 1, 2) - 1
             self.compute_end_pos()
 
         self.logs.append([self.handle_pos,
                           self.angle,
                           self.end_pos,
                           self.held])
-        # print "Tool hand_pos:", hand_pos, "hand_angle:", hand_angle, "gripper_change:", gripper_change, "self.handle_pos:", self.handle_pos, "self.angle:", self.angle, "self.held:", self.held
         return list(self.end_pos) + [self.holding]  + [self.held] # Tool pos
 
     def print_log(self):
@@ -213,7 +210,6 @@ class Toy(Environment):
         self.move = {'Arm': False, 'Gripper Stick': False, 'Magnet Stick': False, 'Magnet 1': False, 'Magnet 2': False, 'Magnet 3': False}
         self.circle = None
         self.pos = np.array(self.initial_position)
-        #self.logs = []
 
     def compute_motor_command(self, m):
         return m
@@ -259,7 +255,6 @@ class Toy(Environment):
             if arm_holding == self.input['Magnet 3'] or mstick_holding == self.input['Magnet 3']:
                 self.pos = self.compute_magnet_hold_pos(angle, m[self.input['Magnet 3'], 0:2], 1.5*self.size)      # m[self.input['Magnet 3'], 0:2]
                 self.move['Magnet 3'] = 1
-        # TODO für meherere Magnete müsste man hier arm_holding/mstick_holding bedingung anpassen
 
         if ((0. - self.pos[0]) ** 2 + (1.1 - self.pos[1]) ** 2 < self.size_sq): # Box
             self.pos = [0., 1.1]
@@ -281,7 +276,6 @@ class Toy(Environment):
         print(len(self.logs))
 
     def plot(self, ax, i, **kwargs_plot):
-        #self.logs = self.logs[-50:]
         pos = self.logs[i][0]
         self.circle = Circle((pos[0], pos[1]), self.size, fc='c', animated=True, **kwargs_plot)
         ax.add_patch(self.circle)
@@ -290,7 +284,6 @@ class Toy(Environment):
     def plot_update(self, ax, i, **kwargs_plot):
         if self.circle is None:
             self.plot(ax, 0, **kwargs_plot)
-        #self.logs = self.logs[-50:]
         pos = self.logs[i][0]
         self.circle.center = tuple(pos)
         return [self.circle]
@@ -313,7 +306,6 @@ class Magnet(Environment):
     def reset(self):
         self.rect = None
         self.pos = np.array(self.initial_position)
-        #self.logs = []
 
     def print_log(self):
         print("Magnet:")
@@ -339,14 +331,12 @@ class Magnet(Environment):
             self.pos = m[self.input['Arm']][0:2]
             arm_holding=self.id
         elif mstick_holding==self.id or (mstick_holding==0 and  (m[self.input['Magnet Stick'], 0] - self.pos[0]) ** 2 + (m[self.input['Magnet Stick'], 1] - self.pos[1]) ** 2 < self.size_sq):
-            self.pos = self.compute_magnet_hold_pos(angle, m[self.input['Magnet Stick']][0:2]) #m[self.input['Magnet Stick']][0:2]
+            self.pos = self.compute_magnet_hold_pos(angle, m[self.input['Magnet Stick']][0:2])
             mstick_holding = self.id
-            # TODO Magnetic Stick kann jetzt nur einen Magneten/objekt auf einmal halten:
         self.logs.append([self.pos])
         return list(self.pos) + [arm_holding, mstick_holding]
 
     def plot(self, ax, i, **kwargs_plot):
-        #self.logs = self.logs[-50:]
         pos = self.logs[i][0]
         x_bottom = pos[0] - self.size/2
         y_bottom = pos[1] - self.size/2
@@ -357,11 +347,6 @@ class Magnet(Environment):
     def plot_update(self, ax, i, **kwargs_plot):
         if self.rect is None:
             self.plot(ax, 0, **kwargs_plot)
-        #print("Magnet plot update")
-        #print(self.logs)
-        #print(len(self.logs))
-        #print(self.logs[-50:])
-        #self.logs = self.logs[-50:]
         pos = self.logs[i][0]
         x_bottom = pos[0] - self.size/2
         y_bottom = pos[1] - self.size/2
@@ -383,7 +368,6 @@ class Box(Environment):
     def reset(self):
         self.filled = False
         self.circle = None
-        #self.logs = []
 
     def compute_motor_command(self, m):
         return m
@@ -473,7 +457,7 @@ class My_Very_Own_Complex_Environment_and_Joints(DynamicEnvironment):
             fun_s_lower=lambda m, s: s+s,
             fun_s_top=lambda m, s_lower, s: s_lower[0:6] + s[0:3] + s[4:6] + arm_holding_stick(s_lower, s))
 
-        def arm_holding_stick(arm_pos, stick_pos): #es könnte immer noch theoretisch sein, dass beide gleichzeitig aufgehoben werden
+        def arm_holding_stick(arm_pos, stick_pos):
             if stick_pos[3]:
                 return [1]
             elif stick_pos[7]:
